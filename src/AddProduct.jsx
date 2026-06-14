@@ -1,6 +1,6 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
-function AddProduct({categories, onProductAdded}) {
+function AddProduct({categories, onProductAdded, editingProduct}) {
 
     const [product, setProduct] = useState({
         name: "",
@@ -30,18 +30,42 @@ function AddProduct({categories, onProductAdded}) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8080/api/products", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(product)
-    })
-    .then(res => res.json())
-    .then(data => {
-        onProductAdded(data);
-    });
-  };
+    if (product.id) {
+        // UPDATE
+        fetch(`http://localhost:8080/api/products/${product.id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(product)
+        })
+            .then(res => res.json())
+            .then(data => {
+                onProductAdded(data); 
+            });
+
+    } else {
+        // CREATE
+        fetch("http://localhost:8080/api/products", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(product)
+            })
+            .then(res => res.json())
+            .then(data => {
+                onProductAdded(data);
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (editingProduct) {
+        setProduct(editingProduct);
+        }
+    },[editingProduct]);
+
 
   return (
     <div className="card p-3 mb-4">
@@ -55,6 +79,7 @@ function AddProduct({categories, onProductAdded}) {
                         type="text"
                         name="name"
                         placeholder="Name"
+                        value={product.name}
                         className="form-control mb-2"
                         onChange={handleChange}
                     />
@@ -65,6 +90,7 @@ function AddProduct({categories, onProductAdded}) {
                         type="text"
                         name="description"
                         placeholder="Description"
+                        value={product.description}
                         className="form-control mb-2"
                         onChange={handleChange}
                     />
@@ -75,6 +101,7 @@ function AddProduct({categories, onProductAdded}) {
                         type="text"
                         name="imgUrl"
                         placeholder="Image URL"
+                        value={product.imgUrl}
                         className="form-control mb-2"
                         onChange={handleChange}
                     />
@@ -85,6 +112,7 @@ function AddProduct({categories, onProductAdded}) {
                         type="number"
                         name="price"
                         placeholder="Price"
+                        value={product.price}
                         className="form-control mb-2"
                         onChange={handleChange}
                     />
@@ -93,6 +121,7 @@ function AddProduct({categories, onProductAdded}) {
                 <div className="col-md-2">
                     <select
                         name="categoryId"
+                        value={product.category?.id || ""}
                         className="form-select mb-2"
                         onChange={handleChange}
                     >

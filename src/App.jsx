@@ -10,6 +10,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [editingProduct, setEditingProduct] = useState(null);
 
   useEffect(() => { //useEffect hook to fetch data from backend
     fetch('http://localhost:8080/api/products') //fecthing data from backend
@@ -51,8 +52,32 @@ function App() {
         });
 
   const handleProductAdded = (newProduct) => {
-    setProducts([...products, newProduct]);
+    setProducts(products.map(p =>
+      p.id === newProduct.id ? newProduct : p
+    ).concat(
+      products.some(p => p.id === newProduct.id) ? [] : [newProduct]
+    ));
   };
+
+  const handleDelete = (id) => {
+    fetch(`http://localhost:8080/api/products/${id}`, {
+      method:"DELETE"
+    })
+    .then((res) => {
+      console.log("DELETE status:", res.status);
+      alert("Product deleted successfully");
+      return res.text();
+    })
+    .then(() => {
+      setProducts(products.filter(product => product.id !== id));
+    })
+    .catch(error => {console.error("Error deleting product:", error)});
+  };
+
+  const handleEdit = (product) => {
+    console.log("Editing: ", product);
+    setEditingProduct(product);
+  }
 
   return (
     <div className='container'>
@@ -85,7 +110,11 @@ function App() {
       <div>
          {filteredProducts.length ? (
           // Display products
-          <ProductList products={filteredProducts} />
+          <ProductList 
+            products={filteredProducts} 
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
         ) : (
           <p>No products found</p>
         )}
@@ -95,6 +124,7 @@ function App() {
       <AddProduct
         categories={categories}
         onProductAdded={handleProductAdded}
+        editingProduct={editingProduct}
         />
         
     </div> 

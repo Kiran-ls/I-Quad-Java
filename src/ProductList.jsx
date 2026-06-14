@@ -1,4 +1,4 @@
-const ProductList = ({ products }) => {
+const ProductList = ({ products, onDelete, onEdit }) => {
     return (
         <div className="row">
             {products.map(product => (
@@ -12,9 +12,16 @@ const ProductList = ({ products }) => {
                             <h5 className = "card-title">{product.name}</h5>
                             <p className = "card-text">{product.description}</p>
                             <p className = "card-text"><strong>${product.price}</strong></p>
-                            <div className="mt-auto" d-flex justify-content-end gap-2>
-                                <button className="btn btn-danger btn-sm">Delete</button>
-                                <button className="btn btn-secondary btn-sm">Edit</button>
+                            <div className="mt-auto d-flex justify-content-end gap-2">
+                                <button 
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => onDelete(product.id)}>
+                                    Delete
+                                </button>
+                                <button className="btn btn-secondary btn-sm"
+                                    onClick={() => onEdit(product)}>
+                                    Edit 
+                                </button>
                             </div>
                         </div>
                     </div>

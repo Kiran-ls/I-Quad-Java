@@ -2,11 +2,13 @@ package com.kiran.ProductCatalogApp.controller;
 
 import com.kiran.ProductCatalogApp.entity.Product;
 import com.kiran.ProductCatalogApp.service.ProductService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/products")
 public class ProductController {
 
@@ -37,8 +39,8 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable Long id){
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
-        return "Product Deleted";
+        return ResponseEntity.ok("Deleted");
     }
 }

@@ -1,6 +1,7 @@
 package com.kiran.ProductCatalogApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class Product {
     private String imgUrl;
     private Double price;
 
-    @JsonBackReference
+    @JsonIgnoreProperties("products")
     @ManyToOne
     @JoinColumn(name="category_id", nullable = false)
     private Category category;

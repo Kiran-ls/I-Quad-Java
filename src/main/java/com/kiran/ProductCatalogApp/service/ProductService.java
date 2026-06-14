@@ -2,11 +2,13 @@ package com.kiran.ProductCatalogApp.service;
 
 import com.kiran.ProductCatalogApp.entity.Product;
 import com.kiran.ProductCatalogApp.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -41,8 +43,14 @@ public class ProductService {
     }
 
     public void deleteProduct(Long id) {
+        System.out.println("Deleting product with ID: " + id);
         Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if(existingProduct.getCategory() != null) {
+            existingProduct.getCategory().getProducts().remove(existingProduct);
+        }
         productRepository.delete(existingProduct);
+        System.out.println("Deleted Successfully");
     }
 }

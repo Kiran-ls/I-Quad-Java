@@ -18,11 +18,13 @@ public class UserController {
 
     @PostMapping("/register")
     public String registerUser(@RequestBody User user) {
+        System.out.println("Register API HIT");
         return userService.registerUser(user);
     }
 
     @PostMapping("/login")
     public String login(@RequestBody User user, HttpSession session) {
+        System.out.println("Register API HIT");
         User loggedUser = userService.login(user);
 
         if(loggedUser != null) {

@@ -3,8 +3,18 @@ import { useState, useEffect } from 'react';
 import ProductList from './ProductList';
 import CategoryFilter from './CategoryFilter';
 import AddProduct from './AddProduct';
+import Login from './Login';
+import Register from './Register';
+import Navbar from './Navbar';
+//import { Navbar } from 'react-bootstrap';
+
 
 function App() {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
+  
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -13,14 +23,38 @@ function App() {
   const [editingProduct, setEditingProduct] = useState(null);
 
   useEffect(() => { //useEffect hook to fetch data from backend
-    fetch('http://localhost:8080/api/products') //fecthing data from backend
-      .then(response => response.json()) //converting response to json
-      .then(data => setProducts(data)); //setting the data to products state
+    if  (isLoggedIn){
+      fetch('http://localhost:8080/api/products', {credentials : "include"}) //fecthing data from backend
+        .then(response => response.json()) //converting response to json
+        .then(data => setProducts(data)); //setting the data to products state
 
-    fetch('http://localhost:8080/api/categories') 
-      .then(response => response.json()) 
-      .then(data => setCategories(data)); //setting the data to categories state
-  }, []);
+      fetch('http://localhost:8080/api/categories', {credentials : "include"}) 
+        .then(response => response.json()) 
+        .then(data => setCategories(data)); //setting the data to categories state
+    }
+  }, [isLoggedIn]);
+
+  //logout
+  const handleLogout = () => {
+    fetch('http://localhost:8080/api/logout', {
+      method: "POST",
+      credentials : "include"
+    }).then(()=> {
+      setIsLoggedIn(false)
+    });
+  };
+
+  //if not logged in show login/register
+  if (!isLoggedIn) {
+    return showRegister ? (
+      <Register onSwitch={() => setShowRegister(false)} />
+    ) : (
+      <Login
+        onLogin={() => setIsLoggedIn(true)}
+        onSwitch={() => setShowRegister(true)}
+      />
+    );
+  }
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -61,7 +95,8 @@ function App() {
 
   const handleDelete = (id) => {
     fetch(`http://localhost:8080/api/products/${id}`, {
-      method:"DELETE"
+      method:"DELETE",
+      credentials : "include"
     })
     .then((res) => {
       console.log("DELETE status:", res.status);
@@ -81,6 +116,8 @@ function App() {
 
   return (
     <div className='container'>
+
+      <Navbar onLogout={handleLogout} />
       <h1 className='my-4'> Product Catalog</h1>
 
 

@@ -37,6 +37,7 @@ function AddProduct({categories, onProductAdded, editingProduct}) {
             headers: {
                 "Content-Type": "application/json"
             },
+            credentials: "include",
             body: JSON.stringify(product)
         })
             .then(res => res.json())
@@ -51,6 +52,7 @@ function AddProduct({categories, onProductAdded, editingProduct}) {
             headers: {
                 "Content-Type": "application/json"
             },
+            credentials: "include",
             body: JSON.stringify(product)
             })
             .then(res => res.json())

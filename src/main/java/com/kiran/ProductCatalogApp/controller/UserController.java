@@ -40,4 +40,15 @@ public class UserController {
         session.invalidate();
         return "logout";
     }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestParam String email) {
+        return userService.forgotPassword(email);
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String token,
+                                @RequestParam String newPassword) {
+        return userService.resetPassword(token, newPassword);
+    }
 }

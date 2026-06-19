@@ -7,12 +7,17 @@ import Login from './Login';
 import Register from './Register';
 import Navbar from './Navbar';
 //import { Navbar } from 'react-bootstrap';
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
 
 
 function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [resetToken, setResetToken] = useState(null);
+
 
   
   const [products, setProducts] = useState([]);
@@ -34,24 +39,67 @@ function App() {
     }
   }, [isLoggedIn]);
 
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.startsWith("/reset-password")) {
+      const token = path.split("/")[2];
+      setResetToken(token);
+    }
+  }, []);
+
   //logout
   const handleLogout = () => {
     fetch('http://localhost:8080/api/logout', {
       method: "POST",
       credentials : "include"
     }).then(()=> {
-      setIsLoggedIn(false)
+      setIsLoggedIn(false);
     });
   };
 
   //if not logged in show login/register
+  // if (!isLoggedIn) {
+  //   return showRegister ? (
+  //     <Register onSwitch={() => setShowRegister(false)} />
+  //   ) : (
+  //     <Login
+  //       onLogin={() => setIsLoggedIn(true)}
+  //       onSwitch={() => setShowRegister(true)}
+  //     />
+  //   );
+  // }
   if (!isLoggedIn) {
-    return showRegister ? (
-      <Register onSwitch={() => setShowRegister(false)} />
-    ) : (
+    if (showForgot) {
+      return <ForgotPassword onBack={() => setShowForgot(false)} />;
+    }
+
+    if (showRegister) {
+      return <Register onSwitch={() => setShowRegister(false)} />;
+    }
+
+    if (resetToken) {
+      return (
+        <ResetPassword 
+          token={resetToken} 
+          onBack={() => {
+            setResetToken(null);
+            window.location.href="/";
+          }}
+        />
+      );
+    }
+
+    return (
       <Login
         onLogin={() => setIsLoggedIn(true)}
-        onSwitch={() => setShowRegister(true)}
+        onSwitch={(type) => {
+          if (type === "forgot") {
+            setShowForgot(true);
+          } else {
+            setShowRegister(true);
+          }
+        }}
       />
     );
   }

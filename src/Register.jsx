@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function Register({ onSwitch }) {
-    const [user, setUser] = useState({username: "", password: ""});
+    const [user, setUser] = useState({username: "", password: "", email:""});
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -33,6 +33,9 @@ function Register({ onSwitch }) {
 
                         <input type="password" placeholder="Password" className="form-control mb-3" 
                             onChange={(e)=>setUser({...user, password:e.target.value})}/>
+                        
+                        <input type="email" placeholder="Email" className="form-control mb-3" 
+                            onChange={(e)=>setUser({...user, email:e.target.value})}/>
 
                         <button className="btn btn-primary">Register</button>
                     </form>

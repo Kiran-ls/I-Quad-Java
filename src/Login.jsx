@@ -38,8 +38,17 @@ function Login({onLogin, onSwitch}) {
                         <input type="password" placeholder="Password" className="form-control mb-3" 
                             onChange={(e)=>setUser({...user, password:e.target.value})}/>
 
+                        {/* <input type="email" placeholder="Email" className="form-control mb-3" 
+                            onChange={(e)=>setUser({...user, email:e.target.value})}/> */}
+
                         <button className="btn btn-primary">Login</button>
                     </form>
+
+                    <p className="mt-2">
+                        <button className="btn btn-link" onClick={() => onSwitch("forgot")}>
+                            Forgot Password?
+                        </button>
+                    </p>
 
                     <p className="mt-2">
                         New User? <button onClick={onSwitch}>Register</button>

@@ -1,8 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Login({onLogin, onSwitch}) {
 
     const [user, setUser] = useState({username: "", password: ""});
+
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        if (queryParams.get("login") === "success") {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            onLogin();
+        } else if (queryParams.get("login") === "error") {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, [onLogin]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -49,6 +60,12 @@ function Login({onLogin, onSwitch}) {
                             Forgot Password?
                         </button>
                     </p>
+
+                    <a href="http://localhost:8080/oauth2/authorization/google">
+                            <button className="btn btn-danger  w-100 mt-2">
+                                Continue with Google
+                            </button>
+                    </a>
 
                     <p className="mt-2">
                         New User? <button onClick={onSwitch}>Register</button>

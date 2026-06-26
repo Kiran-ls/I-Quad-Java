@@ -3,7 +3,11 @@ package com.kiran.ProductCatalogApp.controller;
 import com.kiran.ProductCatalogApp.entity.User;
 import com.kiran.ProductCatalogApp.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -16,6 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    /*
     @PostMapping("/register")
     public String registerUser(@RequestBody User user) {
         System.out.println("Register API HIT");
@@ -35,12 +40,6 @@ public class UserController {
         return "fail";
     }
 
-    @PostMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "logout";
-    }
-
     @PostMapping("/forgot-password")
     public String forgotPassword(@RequestParam String email) {
         return userService.forgotPassword(email);
@@ -50,5 +49,34 @@ public class UserController {
     public String resetPassword(@RequestParam String token,
                                 @RequestParam String newPassword) {
         return userService.resetPassword(token, newPassword);
+    }
+     */
+
+    @PostMapping("/request-otp")
+    public ResponseEntity<String> requestOtp(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String response = userService.sendOtp(email);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request, HttpSession session) {
+        String email = request.get("email");
+        String otp = request.get("otp");
+
+        User loggedUser = userService.verifyOtp(email, otp);
+
+        if (loggedUser != null){
+            session.setAttribute("userId", loggedUser.getId());
+            session.setAttribute("userName", loggedUser.getUsername());
+            return ResponseEntity.ok("success");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("fail");
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "logout";
     }
 }

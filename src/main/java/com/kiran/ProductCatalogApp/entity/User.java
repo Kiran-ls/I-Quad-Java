@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -15,8 +17,13 @@ public class User {
     private Long id;
 
     private String username;
+
+    @Column(nullable = true)
     private String password;
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    private String otp;
+    private LocalDateTime otpExpiry;
 }

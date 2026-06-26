@@ -3,20 +3,21 @@ import { useState, useEffect } from 'react';
 import ProductList from './ProductList';
 import CategoryFilter from './CategoryFilter';
 import AddProduct from './AddProduct';
-import Login from './Login';
-import Register from './Register';
+//import Login from './Login';
+//import Register from './Register';
 import Navbar from './Navbar';
 //import { Navbar } from 'react-bootstrap';
-import ForgotPassword from './ForgotPassword';
-import ResetPassword from './ResetPassword';
+//import ForgotPassword from './ForgotPassword';
+//import ResetPassword from './ResetPassword';
+import OtpLogin from './OtpLogin';
 
 
 function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
-  const [showForgot, setShowForgot] = useState(false);
-  const [resetToken, setResetToken] = useState(null);
+  //const [showRegister, setShowRegister] = useState(false);
+  //const [showForgot, setShowForgot] = useState(false);
+  //const [resetToken, setResetToken] = useState(null);
 
 
   
@@ -69,6 +70,8 @@ function App() {
   //     />
   //   );
   // }
+
+  /*
   if (!isLoggedIn) {
     if (showForgot) {
       return <ForgotPassword onBack={() => setShowForgot(false)} />;
@@ -88,7 +91,7 @@ function App() {
           }}
         />
       );
-    }
+    } 
 
     return (
       <Login
@@ -102,7 +105,10 @@ function App() {
         }}
       />
     );
-  }
+  } */
+ if (!isLoggedIn) {
+  return <OtpLogin onLogin={() => setIsLoggedIn(true)} />;
+ }
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -215,4 +221,4 @@ function App() {
     </div> 
   )}
 
-export default App
+export default App;

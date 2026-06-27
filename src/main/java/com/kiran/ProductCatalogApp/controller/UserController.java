@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<String> verifyOtp(@RequestBody Map<String, String> request, HttpSession session) {
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request, HttpSession session) {
         String email = request.get("email");
         String otp = request.get("otp");
 
@@ -69,9 +69,13 @@ public class UserController {
         if (loggedUser != null){
             session.setAttribute("userId", loggedUser.getId());
             session.setAttribute("userName", loggedUser.getUsername());
-            return ResponseEntity.ok("success");
+            session.setAttribute("Role", loggedUser.getRole().name());
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "role", loggedUser.getRole().name()
+            ));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("fail");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", "fail"));
     }
 
     @PostMapping("/logout")

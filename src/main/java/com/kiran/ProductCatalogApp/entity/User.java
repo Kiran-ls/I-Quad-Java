@@ -26,4 +26,7 @@ public class User {
 
     private String otp;
     private LocalDateTime otpExpiry;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.ROLE_USER;
 }

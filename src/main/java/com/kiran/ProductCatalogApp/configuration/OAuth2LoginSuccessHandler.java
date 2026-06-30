@@ -6,6 +6,7 @@ import com.kiran.ProductCatalogApp.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -36,6 +37,14 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         if (user != null && user.getRole() != null) {
             role = user.getRole().name();
         }
+
+        //save the role and tracking data into the backend HTTP session
+        HttpSession session = request.getSession();
+        if (user != null) {
+            session.setAttribute("userId", user.getId());
+            session.setAttribute("userName", user.getUsername());
+        }
+        session.setAttribute("userRole", role);
 
         //dynamically inject the role directly into your react client redirect URL param string
         String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:5173/")

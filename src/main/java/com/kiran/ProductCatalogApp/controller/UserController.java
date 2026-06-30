@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -69,7 +70,7 @@ public class UserController {
         if (loggedUser != null){
             session.setAttribute("userId", loggedUser.getId());
             session.setAttribute("userName", loggedUser.getUsername());
-            session.setAttribute("Role", loggedUser.getRole().name());
+            session.setAttribute("userRole", loggedUser.getRole().name());
             return ResponseEntity.ok(Map.of(
                     "status", "success",
                     "role", loggedUser.getRole().name()
@@ -82,5 +83,29 @@ public class UserController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "logout";
+    }
+
+    @GetMapping("/admin/users")
+    public ResponseEntity<?> getAllUsers(HttpSession session) {
+       try {
+           List<User> users = userService.getAllUsersForAdmin(session);
+           return ResponseEntity.ok(users);
+       } catch (SecurityException e) {
+           return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+       }
+    }
+
+    @PutMapping("/admin/users/{id}/role")
+    public ResponseEntity<?> updateUserRole(@PathVariable Long id, @RequestBody Map<String, String> payload,
+                                            HttpSession session) {
+        try {
+            String newRoleStr = payload.get("role");
+            userService.updateUserRoleByModerator(id, newRoleStr, session);
+            return ResponseEntity.ok("Role updated successfully");
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

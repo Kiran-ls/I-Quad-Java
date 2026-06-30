@@ -10,11 +10,13 @@ import Navbar from './Navbar';
 //import ForgotPassword from './ForgotPassword';
 //import ResetPassword from './ResetPassword';
 import OtpLogin from './OtpLogin';
+import ModeratorDashboard from './ModeratorDashboard';
 
 
 function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   //const [showRegister, setShowRegister] = useState(false);
   //const [showForgot, setShowForgot] = useState(false);
   //const [resetToken, setResetToken] = useState(null);
@@ -41,6 +43,7 @@ function App() {
   }, [isLoggedIn]);
 
 
+  //extract token received from backend
   useEffect(() => {
     const path = window.location.pathname;
     if (path.startsWith("/reset-password")) {
@@ -56,6 +59,7 @@ function App() {
       credentials : "include"
     }).then(()=> {
       setIsLoggedIn(false);
+      setUserRole(null); //clears role memory state completely
     });
   };
 
@@ -106,9 +110,13 @@ function App() {
       />
     );
   } */
- if (!isLoggedIn) {
-  return <OtpLogin onLogin={() => setIsLoggedIn(true)} />;
- }
+
+//triggered when login steps complete successfully
+  const handleLoginSuccess = (role) => {
+    setUserRole(role);
+    setIsLoggedIn(true);
+  }
+
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -168,13 +176,28 @@ function App() {
     setEditingProduct(product);
   }
 
+  if (!isLoggedIn) {
+  return <OtpLogin onLogin={handleLoginSuccess} />;
+ }
+
+ if (userRole === "ROLE_MODERATOR") {
+  return (
+    <div className='container'>
+      <Navbar onLogout={handleLogout} />
+      <ModeratorDashboard />
+    </div>
+  );
+ }
+
+
   return (
     <div className='container'>
 
       <Navbar onLogout={handleLogout} />
-      <h1 className='my-4'> Product Catalog</h1>
+      <h1 className='my-4'> 
+        Product Catalog {userRole === "ROLE_ADMIN" && <span className='badge bg-danger ms-2 fs-6'>Admin Panel</span>} </h1>
 
-
+      {/* search and filter ui controls */}
       <div className='row align-items-center mb-4'>
         <div className='col-md-3 col-sm-12 mb-2'>
           <CategoryFilter categories={categories} onSelect={handleCategorySelect} />
@@ -187,9 +210,9 @@ function App() {
             placeholder='Search products...' 
             onChange={handleSearchChange}
             />
-
-
         </div>
+
+
         <div className='col-md-4 col-sm-12 mb-2'>
           <select className='form-select' onChange={handleSortChange}>
             <option value="asc">Sort by Price (Low to High)</option>
@@ -198,25 +221,30 @@ function App() {
         </div>
       </div>
 
+      {/* Main catalog view container */}
       <div>
          {filteredProducts.length ? (
           // Display products
           <ProductList 
             products={filteredProducts} 
-            onDelete={handleDelete}
-            onEdit={handleEdit}
+            //pass edit/delete handlers only if user is Admin.
+            //if they are a User, passing null tells productList to hide those actions.
+            onDelete={userRole === "ROLE_ADMIN" ? handleDelete : null}
+            onEdit={userRole === "ROLE_ADMIN" ? handleEdit : null}
           />
         ) : (
           <p>No products found</p>
         )}
         </div>
 
-        {/* add product */}
-      <AddProduct
-        categories={categories}
-        onProductAdded={handleProductAdded}
-        editingProduct={editingProduct}
-        />
+        {/*render the add product from only for admin accounts */}
+        {userRole === "ROLE_ADMIN" && (
+          <AddProduct
+            categories={categories}
+            onProductAdded={handleProductAdded}
+            editingProduct={editingProduct}
+          />
+        )}
         
     </div> 
   )}

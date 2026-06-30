@@ -8,11 +8,18 @@ function OtpLogin({ onLogin }) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        //Parse the browser address bar variables
         const queryParams = new URLSearchParams(window.location.search);
-        if (queryParams.get("login") === "success") {
+        const loginStatus = queryParams.get("login");
+        const roleFromUrl = queryParams.get("role");
+
+        if (loginStatus === "success") {
+            //Erase the query params from the URL bar so the address looks clean
             window.history.replaceState({}, document.title, window.location.pathname);
-            onLogin();
-        } else if (queryParams.get("login") === "error") {
+            //call onLogin and pass the extracted role
+            onLogin(roleFromUrl);
+
+        } else if (loginStatus === "error") {
             window.history.replaceState({}, document.title, window.location.pathname);
             alert("Google Sign-In failed");
         }
@@ -50,11 +57,12 @@ function OtpLogin({ onLogin }) {
             credentials: "include",
             body: JSON.stringify({email, otp})
         })
-        .then(res => {
-            if (res.ok) {
-                onLogin();
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "success") {
+                onLogin(data.role);
             } else {
-                alert("Invalid or Expired OTP code.");
+                alert("Invalid or Expired OTP.");
             }
         })
         .catch(err => console.error("Error verifying OTP:", err))
@@ -66,7 +74,7 @@ function OtpLogin({ onLogin }) {
         <div className="container mt-5">
             <div className="row justify-content-center">
                 <div className="col-md-5 card p-4 shadow-sm">
-                    <h2 className="text-center mb-4">Welcome back</h2>
+                    <h2 className="text-center mb-4">Welcome to Product Catalog</h2>
                     <p className="text-muted text-center small mb-4">
                         Enter your email to log-in
                     </p>

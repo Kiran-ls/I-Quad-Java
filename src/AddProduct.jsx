@@ -70,8 +70,8 @@ function AddProduct({categories, onProductAdded, editingProduct}) {
 
 
   return (
-    <div className="card p-3 mb-4">
-        <h4>Add Product</h4>
+    <div className="card p-3 mb-4 border-warning shadow-sm">
+        <h4>{product.id ? " Update Product" : " Add New Product"}</h4>
 
         <form onSubmit={handleSubmit}>
             <div className="row">
@@ -137,8 +137,8 @@ function AddProduct({categories, onProductAdded, editingProduct}) {
                 </div>
 
                 <div className="col-md-1">
-                    <button className="btn btn-primary w-100">
-                        Add
+                    <button className={`btn w-100 mb-2 ${product.id ? "btn-warning" : "btn-primary"}`}>
+                        {product.id ? "Update" : "Add"}
                     </button>
                 </div>
 
